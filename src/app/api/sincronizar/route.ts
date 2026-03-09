@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       mapaCorredores.set(`${c.nombre.toLowerCase()}-${c.cedula || ''}`, c.id);
     });
 
-    const nuevos = [];
+    const nuevos: any[] = [];
     const paraActualizar = [];
 
     for (const fila of filas) {
@@ -64,14 +64,18 @@ export async function POST(request: Request) {
 
       const idExistente = mapaCorredores.get(clave);
 
-      if (idExistente) {
+      // --- LA SOLUCIÓN AL ERROR 500 ESTÁ AQUÍ ---
+      if (idExistente === "nuevo") {
+        // Si el ID es "nuevo", significa que es un duplicado en este mismo lote de 50. Lo ignoramos.
+        continue;
+      } else if (idExistente) {
         paraActualizar.push(prisma.corredor.update({
           where: { id: idExistente },
           data: datosExtras
         }));
       } else {
         nuevos.push({ nombre: nombreStr, cedula: cedulaStr, ...datosExtras });
-        mapaCorredores.set(clave, "nuevo"); // Evita duplicados en el mismo lote
+        mapaCorredores.set(clave, "nuevo"); // Lo marcamos para evitar que su duplicado choque
       }
     }
 
@@ -80,6 +84,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Error guardando el lote:", error);
     return NextResponse.json({ error: "Error guardando el lote" }, { status: 500 });
   }
 }

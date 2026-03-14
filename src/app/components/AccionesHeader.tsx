@@ -88,12 +88,6 @@ export default function AccionesHeader() {
   return (
     <>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-        <button 
-          onClick={() => setMostrarModalBorrar(true)}
-          className="w-full sm:w-auto bg-white hover:bg-red-50 text-red-500 border border-gray-200 px-6 py-3 rounded-full font-bold transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
-        >
-          Vaciar Lista
-        </button>
 
         <button 
           onClick={sincronizarGoogleSheets}
